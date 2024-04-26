@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<link href="style.css" rel="stylesheet">
+<script type="text/javascript" src="scripts/tabulator.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Revocation Statistics Earth</title>
+
+
+</head>
+<body>
+<div id="table_container">
+    <div style="text-align: center; padding: 10px; font-family: Montserrat">
+        <a href="index.html" class="button"><span class="home"></span>Home</a>
+        <a class="button" id="clear-filter" onclick="clearFilters()"><span class="clear"></span>Clear Filters</a>
+        <a class="button" href="data/json/revocation_table_earth.json"><span class="download"></span>Download</a>
+    </div>
+    <div id="table" style="font-family: Montserrat"></div>
+</div>
+<script>
+
+var minMaxFilterEditor = function(cell, onRendered, success, cancel, editorParams){
+
+    var end;
+
+    var container = document.createElement("span");
+
+    //create and style inputs
+    var start = document.createElement("input");
+    start.setAttribute("type", "number");
+    start.setAttribute("placeholder", "Min");
+    start.setAttribute("min", 0);
+    start.style.padding = "4px";
+    start.style.width = "50%";
+    start.style.boxSizing = "border-box";
+
+    start.value = cell.getValue();
+
+    function buildValues(){
+        success({
+            start:start.value,
+            end:end.value,
+        });
+    }
+
+    function keypress(e){
+        if(e.keyCode == 13){
+            buildValues();
+        }
+
+        if(e.keyCode == 27){
+            cancel();
+        }
+    }
+
+    end = start.cloneNode();
+    end.setAttribute("placeholder", "Max");
+
+    start.addEventListener("change", buildValues);
+    start.addEventListener("blur", buildValues);
+    start.addEventListener("keydown", keypress);
+
+    end.addEventListener("change", buildValues);
+    end.addEventListener("blur", buildValues);
+    end.addEventListener("keydown", keypress);
+
+
+    container.appendChild(start);
+    container.appendChild(end);
+
+    return container;
+ }
+
+//custom max min filter function
+function minMaxFilterFunction(headerValue, rowValue, rowData, filterParams) {
+    if (typeof rowValue === "number" || typeof rowValue === "string") {
+        if (headerValue.start !== "") {
+            if (headerValue.end !== "") {
+                return parseFloat(rowValue) >= parseFloat(headerValue.start) && parseFloat(rowValue) <= parseFloat(headerValue.end);
+            } else {
+                return parseFloat(rowValue) >= parseFloat(headerValue.start);
+            }
+        } else {
+            if (headerValue.end !== "") {
+                return parseFloat(rowValue) <= parseFloat(headerValue.end);
+            }
+        }
+    }
+
+    return true;
+}
+
+var table = new Tabulator("#table", {
+    columnDefaults:{
+        minWidth:130,
+    },
+    layout:"fitColumns",
+    columns:[
+    {title:"PKI", field:"PKI", headerFilter:"list", headerFilterParams:{valuesLookup:true, clearable:true}},
+    {title:"Variant", field:"Variant", headerFilter:"list", headerFilterParams:{valuesLookup:true, clearable:true}},
+    {title:"Distributed", field:"Distributed", formatter:"tickCross"},
+    {title:"Subscribe", field:"Subscribe", formatter:"tickCross"},
+    {title:"Cache", field:"Cache", formatter:"tickCross"},
+    {title:"Attack Origin", field:"Attack Origin", headerFilter:"list", headerFilterParams:{valuesLookup:true, clearable:true}},
+    {title:"Revocation Origin", field:"Revocation Origin", headerFilter:"list", headerFilterParams:{valuesLookup:true, clearable:true}},
+    {title:"Delivered Ratio", field:"delivered_ratio", hozAlign:"left",  headerFilter:minMaxFilterEditor, headerFilterFunc:minMaxFilterFunction, headerFilterLiveFilter:false},
+    {
+        title:"Latency Dropped (s)",
+        hozAlign:"left",
+        columns:[
+            {title:"Min", field:"latency_dropped_min", hozAlign:"left",  headerFilter:minMaxFilterEditor, headerFilterFunc:minMaxFilterFunction, headerFilterLiveFilter:false},
+            {title:"Max", field:"latency_dropped_max", hozAlign:"left",  headerFilter:minMaxFilterEditor, headerFilterFunc:minMaxFilterFunction, headerFilterLiveFilter:false},
+            {title:"Mean", field:"latency_dropped_mean", hozAlign:"left",  headerFilter:minMaxFilterEditor, headerFilterFunc:minMaxFilterFunction, headerFilterLiveFilter:false},
+            {title:"Std", field:"latency_dropped_std", hozAlign:"left",  headerFilter:minMaxFilterEditor, headerFilterFunc:minMaxFilterFunction, headerFilterLiveFilter:false},
+        ],
+    },
+    {
+        title:"Latency Accepted (s)",
+        hozAlign:"left",
+        columns:[
+            {title:"Min", field:"latency_accepted_min", hozAlign:"left",  headerFilter:minMaxFilterEditor, headerFilterFunc:minMaxFilterFunction, headerFilterLiveFilter:false},
+            {title:"Max", field:"latency_accepted_max", hozAlign:"left",  headerFilter:minMaxFilterEditor, headerFilterFunc:minMaxFilterFunction, headerFilterLiveFilter:false},
+            {title:"Mean", field:"latency_accepted_mean", hozAlign:"left",  headerFilter:minMaxFilterEditor, headerFilterFunc:minMaxFilterFunction, headerFilterLiveFilter:false},
+            {title:"Std", field:"latency_accepted_std", hozAlign:"left",  headerFilter:minMaxFilterEditor, headerFilterFunc:minMaxFilterFunction, headerFilterLiveFilter:false},
+        ],
+    }
+    ],
+});
+
+function clearFilters() {
+    window.location.reload();
+}
+
+function loadJSONData() {
+    fetch('data/json/revocation_table_earth.json')
+        .then(response => response.json())
+        .then(data => {
+            table.setData(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+// Call the function to load JSON data
+loadJSONData();
+
+
+</script>
+
+</body>
+</html>
