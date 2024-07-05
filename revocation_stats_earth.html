@@ -103,6 +103,7 @@ var table = new Tabulator("#table", {
     {title:"Cache", field:"Cache", formatter:"tickCross"},
     {title:"Attack Origin", field:"Attack Origin", headerFilter:"list", headerFilterParams:{valuesLookup:true, clearable:true}},
     {title:"Revocation Origin", field:"Revocation Origin", headerFilter:"list", headerFilterParams:{valuesLookup:true, clearable:true}},
+    {title:"Coverage Time", field:"revocation_time", hozAlign:"left",  headerFilter:minMaxFilterEditor, headerFilterFunc:minMaxFilterFunction, headerFilterLiveFilter:false},
     {title:"Delivered Ratio", field:"delivered_ratio", hozAlign:"left",  headerFilter:minMaxFilterEditor, headerFilterFunc:minMaxFilterFunction, headerFilterLiveFilter:false},
     {
         title:"Latency Dropped (s)",

@@ -104,6 +104,15 @@ var table = new Tabulator("#table", {
     {title:"Revocation Origin", field:"Revocation Origin", headerFilter:"list", headerFilterParams:{valuesLookup:true, clearable:true}},
     {title:"Message Time", field:"Message Time", width: 130, headerFilter:"list", headerFilterParams:{valuesLookup:true, clearable:true}},
     {
+        title:"Coverage Time",
+        hozAlign:"left",
+        columns:[
+            {title:"Earth", field:"revocation_time_earth", hozAlign:"left", width: 130, headerFilter:minMaxFilterEditor, headerFilterFunc:minMaxFilterFunction, headerFilterLiveFilter:false},
+            {title:"Moon", field:"revocation_time_moon", hozAlign:"left", width: 130, headerFilter:minMaxFilterEditor, headerFilterFunc:minMaxFilterFunction, headerFilterLiveFilter:false},
+            {title:"Mars", field:"revocation_time_mars", hozAlign:"left", width: 130, headerFilter:minMaxFilterEditor, headerFilterFunc:minMaxFilterFunction, headerFilterLiveFilter:false},
+        ],
+    },
+    {
         title:"Delivered (Total)",
         hozAlign:"left",
         columns:[
